@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as PastWinnersRouteImport } from './routes/past-winners'
+import { Route as GiveawaysIdRouteImport } from './routes/giveaways/$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PastWinnersRoute = PastWinnersRouteImport.update({
+  id: '/past-winners',
+  path: '/past-winners',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GiveawaysIdRoute = GiveawaysIdRouteImport.update({
+  id: '/giveaways/$id',
+  path: '/giveaways/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/past-winners': typeof PastWinnersRoute
+  '/giveaways/$id': typeof GiveawaysIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/past-winners': typeof PastWinnersRoute
+  '/giveaways/$id': typeof GiveawaysIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/past-winners': typeof PastWinnersRoute
+  '/giveaways/$id': typeof GiveawaysIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/admin' | '/past-winners' | '/giveaways/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/admin' | '/past-winners' | '/giveaways/$id'
+  id: '__root__' | '/' | '/admin' | '/past-winners' | '/giveaways/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  PastWinnersRoute: typeof PastWinnersRoute
+  GiveawaysIdRoute: typeof GiveawaysIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/past-winners': {
+      id: '/past-winners'
+      path: '/past-winners'
+      fullPath: '/past-winners'
+      preLoaderRoute: typeof PastWinnersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/giveaways/$id': {
+      id: '/giveaways/$id'
+      path: '/giveaways/$id'
+      fullPath: '/giveaways/$id'
+      preLoaderRoute: typeof GiveawaysIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  PastWinnersRoute: PastWinnersRoute,
+  GiveawaysIdRoute: GiveawaysIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
