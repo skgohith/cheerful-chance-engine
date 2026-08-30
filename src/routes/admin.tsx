@@ -1,7 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Download, LogIn, LogOut, Pencil, Plus, RefreshCw, ShieldCheck, Trash2, Trophy, Users, WandSparkles } from "lucide-react";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,7 +28,6 @@ type Winner = Awaited<ReturnType<typeof adminListWinners>>[number];
 const blankForm = { title: "", description: "", imageUrl: "", startDate: "", endDate: "", winnerLimit: "1" };
 
 function AdminStudio() {
-  const navigate = useNavigate();
   const loadGiveaways = useServerFn(adminListGiveaways);
   const loadParticipants = useServerFn(adminListParticipants);
   const loadWinners = useServerFn(adminListWinners);
