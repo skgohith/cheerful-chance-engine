@@ -59,9 +59,9 @@ export async function submitEntry(data: {
     p_instagram_username: data.instagramUsername,
     p_instagram_username_normalized: data.instagramUsername.toLowerCase().trim().replace(/^@/, ""),
     p_instagram_link: data.instagramLink,
-    p_email: data.email || null,
-    p_phone: data.phone || null,
-    p_ip_hash: ipHash,
+    p_email: data.email || undefined,
+    p_phone: data.phone || undefined,
+    p_ip_hash: ipHash || undefined,
     p_honeypot: data.honeypot || "",
   });
   if (error) {
