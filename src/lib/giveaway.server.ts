@@ -49,9 +49,9 @@ export async function submitEntry(data: {
   fullName: string;
   instagramUsername: string;
   instagramLink: string;
-  email?: string;
-  phone?: string;
-  honeypot?: string;
+  email?: string | undefined;
+  phone?: string | undefined;
+  honeypot?: string | undefined;
 }, ipHash: string | null) {
   const { data: participantId, error } = await createPublicClient().rpc("submit_participant", {
     p_giveaway_id: data.giveawayId,
@@ -101,10 +101,10 @@ export async function adminListWinners(client: CloudClient, userId: string, give
 }
 
 export async function adminSaveGiveaway(client: CloudClient, userId: string, data: {
-  id?: string;
+  id?: string | undefined;
   title: string;
   description: string;
-  imageUrl?: string;
+  imageUrl?: string | undefined;
   startDate: string;
   endDate: string;
   winnerLimit: number;

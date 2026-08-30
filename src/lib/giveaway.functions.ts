@@ -32,7 +32,15 @@ export const submitGiveawayEntry = createServerFn({ method: "POST" }).inputValid
   const firstIp = ip?.split(",")[0]?.trim() ?? null;
   const ipHash = firstIp ? Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(firstIp)))).map((byte) => byte.toString(16).padStart(2, "0")).join("") : null;
   const { submitEntry } = await import("./giveaway.server");
-  return submitEntry(data, ipHash);
+  return submitEntry({
+    giveawayId: data.giveawayId,
+    fullName: data.fullName,
+    instagramUsername: data.instagramUsername,
+    instagramLink: data.instagramLink,
+    email: data.email,
+    phone: data.phone,
+    honeypot: data.honeypot,
+  }, ipHash);
 });
 
 export const adminListGiveaways = createServerFn({ method: "GET" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
@@ -62,7 +70,15 @@ const giveawayInput = z.object({
 
 export const adminSaveGiveaway = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator((input) => giveawayInput.parse(input)).handler(async ({ data, context }) => {
   const { adminSaveGiveaway: save } = await import("./giveaway.server");
-  return save(context.supabase, context.userId, data);
+  return save(context.supabase, context.userId, {
+    id: data.id,
+    title: data.title,
+    description: data.description,
+    imageUrl: data.imageUrl,
+    startDate: data.startDate,
+    endDate: data.endDate,
+    winnerLimit: data.winnerLimit,
+  });
 });
 
 export const adminDeleteGiveaway = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator((input) => z.object({ giveawayId: z.string().uuid() }).parse(input)).handler(async ({ data, context }) => {
