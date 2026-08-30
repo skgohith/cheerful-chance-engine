@@ -34,7 +34,7 @@ function Home() {
   useEffect(() => {
     const hasVisited = window.sessionStorage.getItem("toon-world-intro-seen");
     if (!hasVisited) { setShowSplash(true); window.sessionStorage.setItem("toon-world-intro-seen", "1"); }
-    void Promise.all([loadGiveaways(), loadWinners()]).then(([giveawayRows, winnerRows]) => { setGiveaways(giveawayRows); setWinners(winnerRows); setLoading(false); }).catch(() => setLoading(false));
+    void Promise.all([loadGiveaways(), loadWinners({ data: {} })]).then(([giveawayRows, winnerRows]) => { setGiveaways(giveawayRows); setWinners(winnerRows); setLoading(false); }).catch(() => setLoading(false));
   }, [loadGiveaways, loadWinners]);
 
   const active = useMemo(() => giveaways.filter((giveaway) => giveaway.status === "active" && new Date(giveaway.end_date ?? 0).getTime() > Date.now()), [giveaways]);
