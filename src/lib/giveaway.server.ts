@@ -76,6 +76,9 @@ export async function submitEntry(data: {
 }
 
 async function assertAdmin(client: CloudClient, userId: string) {
+  const { data: userData, error: userError } = await client.auth.getUser();
+  const email = userData.user?.email?.toLowerCase();
+  if (userError || email !== "germanbro40@gmail.com") throw new Error("Admin access required");
   const { data, error } = await client.rpc("has_role", { _user_id: userId, _role: "admin" });
   if (error || !data) throw new Error("Admin access required");
 }

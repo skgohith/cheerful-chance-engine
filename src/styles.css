@@ -211,6 +211,8 @@
 .intro-spark-one { top: 28%; left: 22%; }.intro-spark-two { right: 20%; bottom: 30%; background: var(--brand-teal); animation-delay: .4s; }
 .admin-tag { color: var(--brand-coral); font-size: .7em; text-transform: uppercase; letter-spacing: .1em; }
 .admin-list-item { display: flex; width: 100%; align-items: center; gap: .75rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--card); padding: 1rem; text-align: left; transition: border-color .2s, transform .2s; }
+.past-band .button-outline { color: var(--primary-foreground); border-color: oklch(1 0 0 / .35); background: transparent; }
+.past-band .button-outline:hover { background: oklch(1 0 0 / .12); color: var(--primary-foreground); }
 .admin-list-item:hover, .admin-list-item-selected { border-color: var(--brand-coral); transform: translateX(.15rem); }
 .admin-list-item small { display: block; margin-top: .2rem; color: var(--muted-foreground); font-size: .72rem; text-transform: capitalize; }
 .icon-action { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: .6rem; color: var(--muted-foreground); }.icon-action svg { width: 1rem; }.icon-action:hover { background: var(--muted); color: var(--foreground); }.icon-action-danger:hover { color: var(--destructive); }
