@@ -49,12 +49,13 @@ function AdminStudio() {
   async function refreshGiveaways() {
     try { setGiveaways(await loadGiveaways()); } catch (error) { setMessage(error instanceof Error ? error.message : "Admin access required"); }
   }
-  useEffect(() => { void supabase.auth.getUser().then(({ data }) => setSession(data.user ? { email: data.user.email ?? "" } : null)); }, []);
+  useEffect(() => { void supabase.auth.getUser().then(({ data }) => setSession(data.user?.email?.toLowerCase() === "germanbro40@gmail.com" ? { email: data.user.email ?? "" } : null)); }, []);
   useEffect(() => { if (session) void refreshGiveaways(); }, [session]);
   useEffect(() => { if (!selectedId) return; void Promise.all([loadParticipants({ data: { giveawayId: selectedId } }), loadWinners({ data: { giveawayId: selectedId } })]).then(([rows, winnerRows]) => { setParticipants(rows); setWinners(winnerRows); }); }, [selectedId, loadParticipants, loadWinners]);
 
   async function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); setMessage(null);
+    if (loginForm.email.trim().toLowerCase() !== "germanbro40@gmail.com") { setMessage("This account is not authorized for the admin studio."); setBusy(false); return; }
     const { data, error } = await supabase.auth.signInWithPassword(loginForm);
     if (error || !data.user) setMessage(error?.message ?? "Unable to sign in"); else setSession({ email: data.user.email ?? "" });
     setBusy(false);
