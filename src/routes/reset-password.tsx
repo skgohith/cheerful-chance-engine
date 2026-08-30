@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, KeyRound, Save } from "lucide-react";
+import { ArrowLeft, CheckCircle2, KeyRound, Save } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ function ResetPassword() {
   const [confirmation, setConfirmation] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [complete, setComplete] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -55,6 +56,8 @@ function ResetPassword() {
 
       const code = searchParams.get("code");
       const tokenHash = searchParams.get("token_hash");
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         const { data } = await supabase.auth.getSession();
@@ -63,6 +66,23 @@ function ResetPassword() {
             setMessage("This reset link is invalid, expired, or not for the authorized admin account. Request a new one from the admin sign-in page.");
             setRecoveryReady(false);
           } else {
+            setRecoveryReady(true);
+          }
+        }
+        return;
+      }
+
+      if (accessToken && refreshToken && recoveryType === "recovery") {
+        const { data, error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        if (active) {
+          if (error || !isAuthorizedUser(data.session?.user.email)) {
+            setMessage("This reset link is invalid, expired, or not for the authorized admin account. Request a new one from the admin sign-in page.");
+            setRecoveryReady(false);
+          } else {
+            window.history.replaceState({}, document.title, "/reset-password?type=recovery");
             setRecoveryReady(true);
           }
         }
@@ -111,9 +131,15 @@ function ResetPassword() {
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password });
     if (error) setMessage(error.message);
-    else await navigate({ to: "/admin" });
+    else {
+      await supabase.auth.signOut();
+      setComplete(true);
+      setRecoveryReady(false);
+      setPassword("");
+      setConfirmation("");
+    }
     setBusy(false);
   }
 
-  return <main className="site-shell flex min-h-screen items-center justify-center px-5"><div className="auth-panel w-full max-w-xl"><a href="/" className="brand-lockup"><span className="brand-mark">TT</span><span>Telugu Toon World</span></a><div className="mt-10"><div className="eyebrow"><KeyRound className="size-4" /> Account recovery</div><h1 className="mt-4 text-3xl font-black tracking-tight">Choose a new password.</h1><p className="mt-3 text-sm leading-6 text-muted-foreground">Set a new password for the private admin studio, then continue to sign in.</p></div>{recoveryReady === null && <p className="mt-6 text-sm text-muted-foreground">Checking your secure reset link…</p>}{recoveryReady === false && <div className="mt-6"><p className="status-error">This reset link is missing, expired, or already used. Request a new one from the admin sign-in page.</p><Button type="button" variant="outline" className="mt-5" onClick={() => void navigate({ to: "/admin" })}><ArrowLeft /> Back to admin sign in</Button></div>}{recoveryReady && <><form className="mt-7 space-y-4" onSubmit={updatePassword}><label className="field-label">New password<Input required minLength={8} type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} /></label><label className="field-label">Confirm new password<Input required minLength={8} type="password" autoComplete="new-password" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} /></label>{message && <p className="status-error">{message}</p>}<Button className="w-full" size="lg" disabled={busy}>{busy ? "Saving…" : <><Save /> Save new password</>}</Button></form><p className="mt-6 text-center text-xs text-muted-foreground">Your reset session is temporary and can only be used to set this password.</p></>}</div></main>;
+  return <main className="site-shell flex min-h-screen items-center justify-center px-5"><div className="auth-panel w-full max-w-xl"><a href="/" className="brand-lockup"><span className="brand-mark">TT</span><span>Telugu Toon World</span></a><div className="mt-10"><div className="eyebrow"><KeyRound className="size-4" /> Account recovery</div><h1 className="mt-4 text-3xl font-black tracking-tight">{complete ? "Password updated." : "Choose a new password."}</h1><p className="mt-3 text-sm leading-6 text-muted-foreground">{complete ? "Your new password is ready. Sign in to continue to the private admin studio." : "Set a new password for the private admin studio, then continue to sign in."}</p></div>{complete && <div className="mt-7"><p className="status-success flex items-center gap-2"><CheckCircle2 className="size-4" /> Your password was changed successfully.</p><Button type="button" className="mt-5 w-full" size="lg" onClick={() => void navigate({ to: "/admin" })}><ArrowLeft /> Continue to admin sign in</Button></div>}{!complete && recoveryReady === null && <p className="mt-6 text-sm text-muted-foreground">Checking your secure reset link…</p>}{!complete && recoveryReady === false && <div className="mt-6"><p className="status-error">{message ?? "This reset link is missing, expired, or already used. Request a new one from the admin sign-in page."}</p><Button type="button" variant="outline" className="mt-5" onClick={() => void navigate({ to: "/admin" })}><ArrowLeft /> Back to admin sign in</Button></div>}{!complete && recoveryReady && <><form className="mt-7 space-y-4" onSubmit={updatePassword}><label className="field-label">New password<Input required minLength={8} type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} /></label><label className="field-label">Confirm new password<Input required minLength={8} type="password" autoComplete="new-password" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} /></label>{message && <p className="status-error">{message}</p>}<Button className="w-full" size="lg" disabled={busy}>{busy ? "Saving…" : <><Save /> Save new password</>}</Button></form><p className="mt-6 text-center text-xs text-muted-foreground">Your reset session is temporary and can only be used to set this password.</p></>}</div></main>;
 }
