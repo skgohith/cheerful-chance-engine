@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as PastWinnersRouteImport } from './routes/past-winners'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as GiveawaysIdRouteImport } from './routes/giveaways/$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const PastWinnersRoute = PastWinnersRouteImport.update({
   path: '/past-winners',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GiveawaysIdRoute = GiveawaysIdRouteImport.update({
   id: '/giveaways/$id',
   path: '/giveaways/$id',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/past-winners': typeof PastWinnersRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/giveaways/$id': typeof GiveawaysIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/past-winners': typeof PastWinnersRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/giveaways/$id': typeof GiveawaysIdRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,29 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/past-winners': typeof PastWinnersRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/giveaways/$id': typeof GiveawaysIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/past-winners' | '/giveaways/$id'
+  fullPaths:
+    '/' | '/admin' | '/past-winners' | '/reset-password' | '/giveaways/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/past-winners' | '/giveaways/$id'
-  id: '__root__' | '/' | '/admin' | '/past-winners' | '/giveaways/$id'
+  to: '/' | '/admin' | '/past-winners' | '/reset-password' | '/giveaways/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/past-winners'
+    | '/reset-password'
+    | '/giveaways/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   PastWinnersRoute: typeof PastWinnersRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   GiveawaysIdRoute: typeof GiveawaysIdRoute
 }
 
@@ -92,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PastWinnersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/giveaways/$id': {
       id: '/giveaways/$id'
       path: '/giveaways/$id'
@@ -106,6 +130,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   PastWinnersRoute: PastWinnersRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   GiveawaysIdRoute: GiveawaysIdRoute,
 }
 export const routeTree = rootRouteImport
