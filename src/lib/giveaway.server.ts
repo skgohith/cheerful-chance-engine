@@ -53,17 +53,18 @@ export async function submitEntry(data: {
   phone?: string | undefined;
   honeypot?: string | undefined;
 }, ipHash: string | null) {
-  const { data: participantId, error } = await createPublicClient().rpc("submit_participant", {
+  const rpcArgs = {
     p_giveaway_id: data.giveawayId,
     p_full_name: data.fullName,
     p_instagram_username: data.instagramUsername,
     p_instagram_username_normalized: data.instagramUsername.toLowerCase().trim().replace(/^@/, ""),
     p_instagram_link: data.instagramLink,
-    p_email: data.email || undefined,
-    p_phone: data.phone || undefined,
-    p_ip_hash: ipHash || undefined,
+    ...(data.email ? { p_email: data.email } : {}),
+    ...(data.phone ? { p_phone: data.phone } : {}),
+    ...(ipHash ? { p_ip_hash: ipHash } : {}),
     p_honeypot: data.honeypot || "",
-  });
+  };
+  const { data: participantId, error } = await createPublicClient().rpc("submit_participant", rpcArgs);
   if (error) {
     const message = error.message;
     if (message.includes("already entered")) return { ok: false as const, error: "This Instagram account has already entered." };
