@@ -14,16 +14,296 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      giveaways: {
+        Row: {
+          created_at: string
+          description: string
+          end_date: string
+          id: string
+          image_url: string | null
+          start_date: string
+          status: string
+          title: string
+          updated_at: string
+          winner_limit: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          end_date: string
+          id?: string
+          image_url?: string | null
+          start_date?: string
+          status?: string
+          title: string
+          updated_at?: string
+          winner_limit?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          end_date?: string
+          id?: string
+          image_url?: string | null
+          start_date?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          winner_limit?: number
+        }
+        Relationships: []
+      }
+      participants: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string
+          giveaway_id: string
+          id: string
+          instagram_link: string
+          instagram_username: string
+          instagram_username_normalized: string
+          ip_hash: string | null
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name: string
+          giveaway_id: string
+          id?: string
+          instagram_link: string
+          instagram_username: string
+          instagram_username_normalized: string
+          ip_hash?: string | null
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          giveaway_id?: string
+          id?: string
+          instagram_link?: string
+          instagram_username?: string
+          instagram_username_normalized?: string
+          ip_hash?: string | null
+          phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participants_giveaway_id_fkey"
+            columns: ["giveaway_id"]
+            isOneToOne: false
+            referencedRelation: "giveaways"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "participants_giveaway_id_fkey"
+            columns: ["giveaway_id"]
+            isOneToOne: false
+            referencedRelation: "giveaways_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      winners: {
+        Row: {
+          full_name: string
+          giveaway_id: string
+          id: string
+          instagram_link: string
+          instagram_username: string
+          rank: number
+          selected_at: string
+        }
+        Insert: {
+          full_name: string
+          giveaway_id: string
+          id?: string
+          instagram_link: string
+          instagram_username: string
+          rank: number
+          selected_at?: string
+        }
+        Update: {
+          full_name?: string
+          giveaway_id?: string
+          id?: string
+          instagram_link?: string
+          instagram_username?: string
+          rank?: number
+          selected_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "winners_giveaway_id_fkey"
+            columns: ["giveaway_id"]
+            isOneToOne: false
+            referencedRelation: "giveaways"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "winners_giveaway_id_fkey"
+            columns: ["giveaway_id"]
+            isOneToOne: false
+            referencedRelation: "giveaways_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      giveaways_public: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          id: string | null
+          image_url: string | null
+          participant_count: number | null
+          start_date: string | null
+          status: string | null
+          title: string | null
+          winner_limit: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string | null
+          image_url?: string | null
+          participant_count?: never
+          start_date?: string | null
+          status?: string | null
+          title?: string | null
+          winner_limit?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string | null
+          image_url?: string | null
+          participant_count?: never
+          start_date?: string | null
+          status?: string | null
+          title?: string | null
+          winner_limit?: number | null
+        }
+        Relationships: []
+      }
+      winners_public: {
+        Row: {
+          full_name: string | null
+          giveaway_id: string | null
+          instagram_link: string | null
+          instagram_username: string | null
+          rank: number | null
+          selected_at: string | null
+        }
+        Insert: {
+          full_name?: string | null
+          giveaway_id?: string | null
+          instagram_link?: string | null
+          instagram_username?: string | null
+          rank?: number | null
+          selected_at?: string | null
+        }
+        Update: {
+          full_name?: string | null
+          giveaway_id?: string | null
+          instagram_link?: string | null
+          instagram_username?: string | null
+          rank?: number | null
+          selected_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "winners_giveaway_id_fkey"
+            columns: ["giveaway_id"]
+            isOneToOne: false
+            referencedRelation: "giveaways"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "winners_giveaway_id_fkey"
+            columns: ["giveaway_id"]
+            isOneToOne: false
+            referencedRelation: "giveaways_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      get_participant_count: {
+        Args: { p_giveaway_id: string }
+        Returns: number
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      pick_giveaway_winners: {
+        Args: { p_giveaway_id: string }
+        Returns: {
+          full_name: string
+          giveaway_id: string
+          id: string
+          instagram_link: string
+          instagram_username: string
+          rank: number
+          selected_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "winners"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      submit_participant: {
+        Args: {
+          p_email?: string
+          p_full_name: string
+          p_giveaway_id: string
+          p_honeypot?: string
+          p_instagram_link: string
+          p_instagram_username: string
+          p_instagram_username_normalized: string
+          p_ip_hash?: string
+          p_phone?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +430,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
