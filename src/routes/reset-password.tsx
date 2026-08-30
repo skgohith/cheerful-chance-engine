@@ -28,18 +28,54 @@ function ResetPassword() {
 
   useEffect(() => {
     let active = true;
+    const searchParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-    if (hashParams.get("type") !== "recovery") {
-      setRecoveryReady(false);
-      return () => { active = false; };
-    }
+    const recoveryType = searchParams.get("type") ?? hashParams.get("type");
+    const errorDescription = searchParams.get("error_description") ?? hashParams.get("error_description");
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (active && (event === "PASSWORD_RECOVERY" || session)) setRecoveryReady(true);
     });
-    void supabase.auth.getSession().then(({ data }) => {
+
+    async function initializeRecovery() {
+      if (errorDescription) {
+        if (active) {
+          setMessage(decodeURIComponent(errorDescription.replaceAll("+", " ")));
+          setRecoveryReady(false);
+        }
+        return;
+      }
+
+      const code = searchParams.get("code");
+      const tokenHash = searchParams.get("token_hash");
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (active) {
+          if (error) setMessage("This reset link is invalid or expired. Request a new one from the admin sign-in page.");
+          setRecoveryReady(!error);
+        }
+        return;
+      }
+
+      if (tokenHash && recoveryType === "recovery") {
+        const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: "recovery" });
+        if (active) {
+          if (error) setMessage("This reset link is invalid or expired. Request a new one from the admin sign-in page.");
+          setRecoveryReady(!error);
+        }
+        return;
+      }
+
+      if (recoveryType !== "recovery") {
+        if (active) setRecoveryReady(false);
+        return;
+      }
+
+      const { data } = await supabase.auth.getSession();
       if (active) setRecoveryReady(Boolean(data.session));
-    });
+    }
+
+    void initializeRecovery();
 
     return () => { active = false; authListener.subscription.unsubscribe(); };
   }, []);
