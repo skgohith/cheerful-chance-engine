@@ -14,7 +14,7 @@ export const getPublicGiveaway = createServerFn({ method: "GET" }).inputValidato
   return load(data.id);
 });
 
-export const listPublicWinners = createServerFn({ method: "GET" }).inputValidator((input) => z.object({ giveawayId: z.string().uuid().optional() }).parse(input)).handler(async ({ data }) => {
+export const listPublicWinners = createServerFn({ method: "GET" }).inputValidator((input) => z.object({ giveawayId: z.string().uuid().optional() }).parse(input ?? {})).handler(async ({ data }) => {
   const { listPublicWinners: load } = await import("./giveaway.server");
   return load(data.giveawayId);
 });
