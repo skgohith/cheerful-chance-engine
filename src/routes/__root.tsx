@@ -84,7 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Colorful, community-first giveaways from Telugu Toon World." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@telugutoonworld" },
+      { name: "twitter:site", content: "@telugu_toon_world" },
     ],
     links: [
       {
