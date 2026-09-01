@@ -157,7 +157,7 @@ export async function adminSaveGiveaway(client: CloudClient, userId: string, dat
 export async function adminDeleteGiveaway(client: CloudClient, userId: string, giveawayId: string) {
   await assertAdmin(client, userId);
   const { data, error } = await client.rpc("delete_giveaway_preserve_winners", { p_giveaway_id: giveawayId });
-  if (error || !data) throw new Error(error?.message.includes("not found") ? "Giveaway not found" : "Unable to delete giveaway");
+  if (error || !data) throw new Error(error?.message?.includes("not found") ? "Giveaway not found" : "Unable to delete giveaway");
   return { ok: true };
 }
 
