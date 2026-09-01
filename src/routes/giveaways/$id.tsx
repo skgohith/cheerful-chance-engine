@@ -43,7 +43,9 @@ function GiveawayDetail() {
     return () => { active = false; window.clearInterval(interval); };
   }, [id, loadGiveaway]);
 
-  const ended = useMemo(() => !giveaway || giveaway.status !== "active" || new Date(giveaway.end_date ?? 0).getTime() <= Date.now(), [giveaway]);
+  const startsAt = giveaway ? new Date(giveaway.start_date ?? 0).getTime() : 0;
+  const upcoming = Boolean(giveaway && giveaway.status === "active" && startsAt > Date.now());
+  const ended = useMemo(() => !giveaway || giveaway.status !== "active" || startsAt > Date.now() || new Date(giveaway.end_date ?? 0).getTime() <= Date.now(), [giveaway, startsAt]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -83,7 +85,7 @@ function GiveawayDetail() {
     </header>
     <div className="mx-auto grid max-w-6xl gap-8 px-5 pt-8 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:pt-14">
       <section>
-        <div className="eyebrow"><span className="eyebrow-dot" /> {ended ? "Giveaway closed" : "Entries are open"}</div>
+         <div className="eyebrow"><span className="eyebrow-dot" /> {upcoming ? "Coming soon" : ended ? "Giveaway closed" : "Entries are open"}</div>
         <h1 className="display-title mt-5 max-w-2xl">{giveaway.title}</h1>
         <p className="mt-5 max-w-xl text-lg leading-8 text-muted-foreground">{giveaway.description}</p>
         <div className="mt-8 grid max-w-xl grid-cols-2 gap-3 sm:grid-cols-3">
@@ -110,7 +112,7 @@ function GiveawayDetail() {
             <label className="field-label">Instagram profile link <span className="required-mark">Required</span><Input required type="url" maxLength={300} value={form.instagramLink} onChange={(event) => setForm({ ...form, instagramLink: event.target.value })} placeholder="https://instagram.com/yourusername" disabled={ended || submitting} /></label>
             <div className="grid gap-4 sm:grid-cols-2"><label className="field-label">Email <span className="optional-mark">Optional</span><Input type="email" maxLength={255} value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="you@example.com" disabled={ended || submitting} /></label><label className="field-label">Phone <span className="optional-mark">Optional</span><Input type="tel" maxLength={30} value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} placeholder="+91 98765 43210" disabled={ended || submitting} /></label></div>
             <label className="sr-only">Leave this blank<Input tabIndex={-1} autoComplete="off" value={form.honeypot} onChange={(event) => setForm({ ...form, honeypot: event.target.value })} /></label>
-            <Button type="submit" size="lg" className="mt-2 w-full" disabled={ended || submitting}>{ended ? "Entries closed" : submitting ? "Submitting…" : "Enter giveaway"}</Button>
+             <Button type="submit" size="lg" className="mt-2 w-full" disabled={ended || submitting}>{upcoming ? "Entries open soon" : ended ? "Entries closed" : submitting ? "Submitting…" : "Enter giveaway"}</Button>
           </form>
           <p className="mt-5 text-xs leading-5 text-muted-foreground">One entry per Instagram account. Entries are checked manually before winners are announced.</p>
         </div>
