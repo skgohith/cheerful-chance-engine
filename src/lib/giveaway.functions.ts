@@ -4,6 +4,21 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+function isHttpUrl(value: string) {
+  try {
+    const parsed = new URL(value);
+    return (parsed.protocol === "http:" || parsed.protocol === "https:") && Boolean(parsed.hostname);
+  } catch {
+    return false;
+  }
+}
+
+const requiredHttpUrl = (maxLength: number) => z.string().trim().max(maxLength).refine(isHttpUrl, {
+  message: "Use a complete HTTP or HTTPS link, such as https://instagram.com/your-page",
+});
+
+const optionalHttpUrl = (maxLength: number) => requiredHttpUrl(maxLength).optional().or(z.literal(""));
+
 export const listPublicGiveaways = createServerFn({ method: "GET" }).handler(async () => {
   const { listPublicGiveaways: load } = await import("./giveaway.server");
   return load();
@@ -23,7 +38,7 @@ export const submitGiveawayEntry = createServerFn({ method: "POST" }).inputValid
   giveawayId: z.string().uuid(),
   fullName: z.string().trim().min(2).max(120),
   instagramUsername: z.string().trim().min(2).max(120),
-  instagramLink: z.string().trim().url().max(300),
+  instagramLink: requiredHttpUrl(300),
   email: z.string().trim().email().max(255).optional().or(z.literal("")),
   phone: z.string().trim().max(30).optional().or(z.literal("")),
   honeypot: z.string().max(100).optional(),
@@ -56,7 +71,7 @@ export const adminListParticipants = createServerFn({ method: "GET" }).middlewar
 export const adminUpdateParticipantInstagramLink = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator((input) => z.object({
   participantId: z.string().uuid(),
   giveawayId: z.string().uuid(),
-  instagramLink: z.string().trim().url().max(300),
+  instagramLink: requiredHttpUrl(300),
 }).parse(input)).handler(async ({ data, context }) => {
   const { adminUpdateParticipantInstagramLink: update } = await import("./giveaway.server");
   return update(context.supabase, context.userId, data);
@@ -66,21 +81,6 @@ export const adminListWinners = createServerFn({ method: "GET" }).middleware([re
   const { adminListWinners: load } = await import("./giveaway.server");
   return load(context.supabase, context.userId, data.giveawayId);
 });
-
-function isHttpUrl(value: string) {
-  try {
-    const parsed = new URL(value);
-    return (parsed.protocol === "http:" || parsed.protocol === "https:") && Boolean(parsed.hostname);
-  } catch {
-    return false;
-  }
-}
-
-const requiredHttpUrl = (maxLength: number) => z.string().trim().max(maxLength).refine(isHttpUrl, {
-  message: "Use a complete HTTP or HTTPS link, such as https://instagram.com/your-page",
-});
-
-const optionalHttpUrl = (maxLength: number) => requiredHttpUrl(maxLength).optional().or(z.literal(""));
 
 const giveawayInput = z.object({
   id: z.string().uuid().optional(),
