@@ -1,26 +1,35 @@
-# Happy Surprises
+# Telugu Toon World Giveaways
 
-giveaways
+Giveaway website for the Telugu Toon World Instagram community.
 
-This project was built with [Lovable](https://lovable.dev).
+## Local development
 
-**Live app**: https://cheerful-chance-engine.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/0df18216-29c2-4f33-91a8-d9946eb09140).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+This project uses Lovable Cloud for its database and authentication backend.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+bun install
+bun run dev
 ```
+
+## Vercel deployment
+
+The production build is configured for Vercel. Add these environment variables
+to the Vercel project for every environment you deploy:
+
+```text
+VITE_SUPABASE_URL
+VITE_SUPABASE_PUBLISHABLE_KEY
+SUPABASE_URL
+SUPABASE_PUBLISHABLE_KEY
+```
+
+Use the same backend URL and publishable key configured for this project's
+Lovable Cloud backend. Do not add service-role keys to browser or Vercel
+environment variables unless a future server-only feature explicitly requires
+one.
+
+Vercel settings:
+
+- **Install command:** `bun install`
+- **Build command:** `bun run build`
+- **Output:** detected automatically by Nitro's Vercel preset
