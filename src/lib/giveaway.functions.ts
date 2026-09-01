@@ -67,20 +67,30 @@ export const adminListWinners = createServerFn({ method: "GET" }).middleware([re
   return load(context.supabase, context.userId, data.giveawayId);
 });
 
-const socialUrl = z.string().trim().url().max(500).refine((value) => {
-  const protocol = new URL(value).protocol;
-  return protocol === "http:" || protocol === "https:";
-}, { message: "Use an HTTP or HTTPS link" });
+function isHttpUrl(value: string) {
+  try {
+    const parsed = new URL(value);
+    return (parsed.protocol === "http:" || parsed.protocol === "https:") && Boolean(parsed.hostname);
+  } catch {
+    return false;
+  }
+}
+
+const requiredHttpUrl = (maxLength: number) => z.string().trim().max(maxLength).refine(isHttpUrl, {
+  message: "Use a complete HTTP or HTTPS link, such as https://instagram.com/your-page",
+});
+
+const optionalHttpUrl = (maxLength: number) => requiredHttpUrl(maxLength).optional().or(z.literal(""));
 
 const giveawayInput = z.object({
   id: z.string().uuid().optional(),
   title: z.string().trim().min(3).max(160),
   description: z.string().trim().min(1).max(1000),
-  imageUrl: z.string().trim().url().max(500).optional().or(z.literal("")),
-  instagramUrl: socialUrl.optional().or(z.literal("")),
-  telegramUrl: socialUrl.optional().or(z.literal("")),
-  youtubeUrl: socialUrl.optional().or(z.literal("")),
-  facebookUrl: socialUrl.optional().or(z.literal("")),
+  imageUrl: optionalHttpUrl(500),
+  instagramUrl: optionalHttpUrl(500),
+  telegramUrl: optionalHttpUrl(500),
+  youtubeUrl: optionalHttpUrl(500),
+  facebookUrl: optionalHttpUrl(500),
   startDate: z.string().datetime(),
   endDate: z.string().datetime(),
   winnerLimit: z.number().int().min(1).max(10),

@@ -74,6 +74,24 @@ function toDateTimeLocal(value: string | Date) {
   return new Date(date.getTime() - timezoneOffset * 60_000).toISOString().slice(0, 16);
 }
 
+function isHttpUrl(value: string) {
+  if (!value.trim()) return true;
+  try {
+    const parsed = new URL(value.trim());
+    return (parsed.protocol === "http:" || parsed.protocol === "https:") && Boolean(parsed.hostname);
+  } catch {
+    return false;
+  }
+}
+
+function adminError(error: unknown, fallback: string) {
+  const message = error instanceof Error ? error.message : "";
+  if (message.toLowerCase().includes("invalid url")) {
+    return "Use a complete link beginning with https:// (for example, https://instagram.com/your-page).";
+  }
+  return message || fallback;
+}
+
 function AdminStudio() {
   const loadGiveaways = useServerFn(adminListGiveaways);
   const loadParticipants = useServerFn(adminListParticipants);
@@ -205,13 +223,40 @@ function AdminStudio() {
     setBusy(true);
     setMessage(null);
     try {
+      const linkFields = [
+        ["Image URL", form.imageUrl],
+        ["Instagram link", form.instagramUrl],
+        ["Telegram link", form.telegramUrl],
+        ["YouTube link", form.youtubeUrl],
+        ["Facebook link", form.facebookUrl],
+      ] as const;
+      const invalidLink = linkFields.find(([, value]) => !isHttpUrl(value));
+      if (invalidLink) {
+        setMessage(`${invalidLink[0]} must be a complete HTTP or HTTPS link.`);
+        return;
+      }
+      const startDate = new Date(form.startDate);
+      const endDate = new Date(form.endDate);
+      if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+        setMessage("Enter valid start and end dates.");
+        return;
+      }
+      if (endDate <= startDate) {
+        setMessage("The end date must be after the start date.");
+        return;
+      }
       await saveGiveaway({
         data: {
           ...(selectedId ? { id: selectedId } : {}),
           ...form,
+          imageUrl: form.imageUrl.trim(),
+          instagramUrl: form.instagramUrl.trim(),
+          telegramUrl: form.telegramUrl.trim(),
+          youtubeUrl: form.youtubeUrl.trim(),
+          facebookUrl: form.facebookUrl.trim(),
           winnerLimit: Number(form.winnerLimit),
-          startDate: new Date(form.startDate).toISOString(),
-          endDate: new Date(form.endDate).toISOString(),
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
         },
       });
       setEditing(false);
@@ -220,7 +265,7 @@ function AdminStudio() {
       await refreshGiveaways();
       setMessage("Giveaway saved.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to save giveaway");
+      setMessage(adminError(error, "Unable to save giveaway"));
     } finally {
       setBusy(false);
     }
@@ -294,7 +339,7 @@ function AdminStudio() {
       setLinkDrafts((current) => ({ ...current, [updated.id]: updated.instagram_link }));
       setMessage("Instagram link updated.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to update Instagram link");
+      setMessage(adminError(error, "Unable to update Instagram link"));
     } finally {
       setSavingLinkId(null);
     }
