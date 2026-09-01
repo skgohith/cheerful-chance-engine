@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, CheckCircle2, Clock3, Instagram, MessageCircle, Send, Users } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Clock3, Facebook, Instagram, MessageCircle, Send, Users, Youtube } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -95,7 +95,10 @@ function GiveawayDetail() {
         </div>
         <div className="mt-8 flex flex-wrap gap-3" aria-label="Share giveaway">
           <Button asChild variant="outline"><a href={`https://wa.me/?text=${shareText}%20${shareUrl}`} target="_blank" rel="noreferrer"><MessageCircle /> WhatsApp</a></Button>
-          <Button asChild variant="outline"><a href="https://www.instagram.com/" target="_blank" rel="noreferrer"><Instagram /> Instagram</a></Button>
+           {giveaway.instagram_url && <Button asChild variant="outline"><a href={giveaway.instagram_url} target="_blank" rel="noreferrer"><Instagram /> Instagram</a></Button>}
+           {giveaway.telegram_url && <Button asChild variant="outline"><a href={giveaway.telegram_url} target="_blank" rel="noreferrer"><Send /> Telegram</a></Button>}
+           {giveaway.youtube_url && <Button asChild variant="outline"><a href={giveaway.youtube_url} target="_blank" rel="noreferrer"><Youtube /> YouTube</a></Button>}
+           {giveaway.facebook_url && <Button asChild variant="outline"><a href={giveaway.facebook_url} target="_blank" rel="noreferrer"><Facebook /> Facebook</a></Button>}
           <Button asChild variant="outline"><a href={`https://t.me/share/url?url=${shareUrl}&text=${shareText}`} target="_blank" rel="noreferrer"><Send /> Share</a></Button>
         </div>
         <div className="mt-10 overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-[0_20px_60px_-35px_var(--ring)]">
