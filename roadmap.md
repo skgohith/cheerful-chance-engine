@@ -1,3 +1,4 @@
 - [x] Add admin-managed social links to giveaways and display them on public giveaway pages
 - [x] Allow safe deletion of old giveaways from the admin studio while preserving winner snapshots
 - [x] Regenerate database types and verify the app
+- [x] Document moving the app to another domain or independent backend
