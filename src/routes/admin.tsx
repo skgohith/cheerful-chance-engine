@@ -63,6 +63,13 @@ const blankForm = {
   winnerLimit: "1",
 };
 
+function toDateTimeLocal(value: string | Date) {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const timezoneOffset = date.getTimezoneOffset();
+  return new Date(date.getTime() - timezoneOffset * 60_000).toISOString().slice(0, 16);
+}
+
 function AdminStudio() {
   const loadGiveaways = useServerFn(adminListGiveaways);
   const loadParticipants = useServerFn(adminListParticipants);
@@ -166,8 +173,8 @@ function AdminStudio() {
   function startCreate() {
     setForm({
       ...blankForm,
-      startDate: new Date().toISOString().slice(0, 16),
-      endDate: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 16),
+      startDate: toDateTimeLocal(new Date()),
+      endDate: toDateTimeLocal(new Date(Date.now() + 7 * 86400000)),
     });
     setEditing(true);
   }
@@ -178,8 +185,8 @@ function AdminStudio() {
       title: giveaway.title ?? "",
       description: giveaway.description ?? "",
       imageUrl: giveaway.image_url ?? "",
-      startDate: (giveaway.start_date ?? "").slice(0, 16),
-      endDate: (giveaway.end_date ?? "").slice(0, 16),
+      startDate: toDateTimeLocal(giveaway.start_date ?? ""),
+      endDate: toDateTimeLocal(giveaway.end_date ?? ""),
       winnerLimit: String(giveaway.winner_limit ?? 1),
     });
     setEditing(true);
