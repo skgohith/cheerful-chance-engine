@@ -15,6 +15,13 @@
       "when": 1788236730375,
       "tag": "0001_add_giveaway_social_links",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788236784581,
+      "tag": "0002_preserve_winners_when_deleting_giveaways",
+      "breakpoints": true
     }
   ]
 }

@@ -140,6 +140,39 @@ export type Database = {
         }
         Relationships: []
       }
+      winner_snapshots: {
+        Row: {
+          full_name: string
+          giveaway_id: string
+          giveaway_title: string
+          id: string
+          instagram_link: string
+          instagram_username: string
+          rank: number
+          selected_at: string
+        }
+        Insert: {
+          full_name: string
+          giveaway_id: string
+          giveaway_title: string
+          id?: string
+          instagram_link: string
+          instagram_username: string
+          rank: number
+          selected_at?: string
+        }
+        Update: {
+          full_name?: string
+          giveaway_id?: string
+          giveaway_title?: string
+          id?: string
+          instagram_link?: string
+          instagram_username?: string
+          rank?: number
+          selected_at?: string
+        }
+        Relationships: []
+      }
       winners: {
         Row: {
           full_name: string
@@ -242,46 +275,20 @@ export type Database = {
         Row: {
           full_name: string | null
           giveaway_id: string | null
+          giveaway_title: string | null
           instagram_link: string | null
           instagram_username: string | null
           rank: number | null
           selected_at: string | null
         }
-        Insert: {
-          full_name?: string | null
-          giveaway_id?: string | null
-          instagram_link?: string | null
-          instagram_username?: string | null
-          rank?: number | null
-          selected_at?: string | null
-        }
-        Update: {
-          full_name?: string | null
-          giveaway_id?: string | null
-          instagram_link?: string | null
-          instagram_username?: string | null
-          rank?: number | null
-          selected_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "winners_giveaway_id_fkey"
-            columns: ["giveaway_id"]
-            isOneToOne: false
-            referencedRelation: "giveaways"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "winners_giveaway_id_fkey"
-            columns: ["giveaway_id"]
-            isOneToOne: false
-            referencedRelation: "giveaways_public"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Functions: {
+      delete_giveaway_preserve_winners: {
+        Args: { p_giveaway_id: string }
+        Returns: boolean
+      }
       get_participant_count: {
         Args: { p_giveaway_id: string }
         Returns: number
