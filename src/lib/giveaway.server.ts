@@ -97,6 +97,17 @@ export async function adminListParticipants(client: CloudClient, userId: string,
   return data ?? [];
 }
 
+export async function adminUpdateParticipantInstagramLink(client: CloudClient, userId: string, data: {
+  participantId: string;
+  giveawayId: string;
+  instagramLink: string;
+}) {
+  await assertAdmin(client, userId);
+  const { data: updated, error } = await client.from("participants").update({ instagram_link: data.instagramLink.trim() }).eq("id", data.participantId).eq("giveaway_id", data.giveawayId).select("id, full_name, instagram_username, instagram_link, email, phone, created_at").single();
+  if (error || !updated) throw new Error("Unable to update Instagram link");
+  return updated;
+}
+
 export async function adminListWinners(client: CloudClient, userId: string, giveawayId: string) {
   await assertAdmin(client, userId);
   const { data, error } = await client.from("winners").select("id, full_name, instagram_username, instagram_link, rank, selected_at").eq("giveaway_id", giveawayId).order("rank");
