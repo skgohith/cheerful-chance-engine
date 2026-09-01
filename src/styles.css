@@ -186,6 +186,9 @@
 .countdown-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: .25rem; }
 .countdown-label { color: var(--muted-foreground); font-size: .62rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
 .countdown { border-radius: .7rem; background: var(--brand-coral); color: var(--primary-foreground); padding: .5rem .65rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .82rem; font-weight: 900; white-space: nowrap; }
+.social-links { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+.social-links a { display: inline-flex; align-items: center; gap: .4rem; border: 1px solid oklch(0.86 0.025 80); border-radius: .7rem; padding: .4rem .6rem; color: var(--muted-foreground); font-size: .72rem; font-weight: 800; transition: border-color .2s, color .2s, background-color .2s; }
+.social-links a:hover { border-color: var(--brand-teal); background: oklch(0.63 0.14 181 / .08); color: var(--foreground); }
 .past-band { background: var(--foreground); color: var(--primary-foreground); }
 .past-band .text-muted-foreground, .past-band .section-kicker { color: oklch(1 0 0 / .62); }
 .form-panel, .auth-panel { padding: clamp(1.25rem, 4vw, 2rem); }
