@@ -58,6 +58,10 @@ const blankForm = {
   title: "",
   description: "",
   imageUrl: "",
+  instagramUrl: "",
+  telegramUrl: "",
+  youtubeUrl: "",
+  facebookUrl: "",
   startDate: "",
   endDate: "",
   winnerLimit: "1",
@@ -185,6 +189,10 @@ function AdminStudio() {
       title: giveaway.title ?? "",
       description: giveaway.description ?? "",
       imageUrl: giveaway.image_url ?? "",
+      instagramUrl: giveaway.instagram_url ?? "",
+      telegramUrl: giveaway.telegram_url ?? "",
+      youtubeUrl: giveaway.youtube_url ?? "",
+      facebookUrl: giveaway.facebook_url ?? "",
       startDate: toDateTimeLocal(giveaway.start_date ?? ""),
       endDate: toDateTimeLocal(giveaway.end_date ?? ""),
       winnerLimit: String(giveaway.winner_limit ?? 1),
@@ -234,7 +242,7 @@ function AdminStudio() {
   }
 
   async function remove(id: string) {
-    if (!window.confirm("Delete this giveaway and all of its entries? This cannot be undone.")) return;
+    if (!window.confirm("Delete this giveaway and its entries? Any selected winners will be preserved in the hall of fame.")) return;
     setBusy(true);
     setMessage(null);
     try {
@@ -245,7 +253,7 @@ function AdminStudio() {
         setWinners([]);
       }
       await refreshGiveaways();
-      setMessage("Giveaway and its entries deleted.");
+       setMessage("Giveaway deleted. Winner snapshots were preserved.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to delete giveaway");
     } finally {
@@ -377,6 +385,11 @@ function AdminStudio() {
               <label className="field-label">Title<Input required minLength={3} maxLength={160} value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></label>
               <label className="field-label">Image URL <span className="optional-mark">Optional</span><Input type="url" maxLength={500} value={form.imageUrl} onChange={(event) => setForm({ ...form, imageUrl: event.target.value })} placeholder="https://…" /></label>
               <label className="field-label md:col-span-2">Description<Textarea required maxLength={1000} value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></label>
+               <div className="md:col-span-2"><p className="section-kicker">Community links</p><p className="mt-1 text-sm text-muted-foreground">Add the official channels participants should visit for this giveaway.</p></div>
+               <label className="field-label">Instagram <span className="optional-mark">Optional</span><Input type="url" maxLength={500} value={form.instagramUrl} onChange={(event) => setForm({ ...form, instagramUrl: event.target.value })} placeholder="https://instagram.com/…" /></label>
+               <label className="field-label">Telegram <span className="optional-mark">Optional</span><Input type="url" maxLength={500} value={form.telegramUrl} onChange={(event) => setForm({ ...form, telegramUrl: event.target.value })} placeholder="https://t.me/…" /></label>
+               <label className="field-label">YouTube <span className="optional-mark">Optional</span><Input type="url" maxLength={500} value={form.youtubeUrl} onChange={(event) => setForm({ ...form, youtubeUrl: event.target.value })} placeholder="https://youtube.com/…" /></label>
+               <label className="field-label">Facebook <span className="optional-mark">Optional</span><Input type="url" maxLength={500} value={form.facebookUrl} onChange={(event) => setForm({ ...form, facebookUrl: event.target.value })} placeholder="https://facebook.com/…" /></label>
               <label className="field-label">Starts<Input required type="datetime-local" value={form.startDate} onChange={(event) => setForm({ ...form, startDate: event.target.value })} /></label>
               <label className="field-label">Ends<Input required type="datetime-local" value={form.endDate} onChange={(event) => setForm({ ...form, endDate: event.target.value })} /></label>
               <label className="field-label">Winner spots (1–10)<Input required type="number" min={1} max={10} value={form.winnerLimit} onChange={(event) => setForm({ ...form, winnerLimit: event.target.value })} /></label>
@@ -390,9 +403,9 @@ function AdminStudio() {
             <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-black">Your giveaways</h2><Button variant="ghost" size="icon" onClick={() => void refreshGiveaways()} aria-label="Refresh giveaways"><RefreshCw /></Button></div>
             <div className="space-y-3">
               {giveaways.length === 0 && <div className="empty-state"><WandSparkles className="mx-auto size-8 text-brand-yellow" /><p className="mt-3 text-sm text-muted-foreground">Create your first giveaway.</p></div>}
-              {giveaways.map((giveaway) => {
-                const locked = giveaway.status === "completed" || giveaway.status === "data_cleared";
-                return <div key={giveaway.id} className={selectedId === giveaway.id ? "admin-list-item admin-list-item-selected" : "admin-list-item"}><button type="button" onClick={() => setSelectedId(giveaway.id ?? null)} className="min-w-0 flex-1 text-left"><strong className="block truncate">{giveaway.title}</strong><small>{giveaway.status} · select to view entries</small></button><span className="flex shrink-0 gap-1">{!locked && <Button type="button" variant="ghost" size="icon" className="icon-action" onClick={() => startEdit(giveaway)} aria-label={`Edit ${giveaway.title}`} title="Edit"><Pencil /></Button>}{locked ? <span className="inline-flex items-center px-2 text-xs font-bold text-muted-foreground" title="Completed giveaway data is preserved"><LockKeyhole className="mr-1 size-3.5" /> Locked</span> : <Button type="button" variant="ghost" size="icon" className="icon-action icon-action-danger" onClick={() => void remove(giveaway.id ?? "")} aria-label={`Delete ${giveaway.title}`} title="Delete"><Trash2 /></Button>}</span></div>;
+               {giveaways.map((giveaway) => {
+                 const locked = giveaway.status === "completed" || giveaway.status === "data_cleared";
+                 return <div key={giveaway.id} className={selectedId === giveaway.id ? "admin-list-item admin-list-item-selected" : "admin-list-item"}><button type="button" onClick={() => setSelectedId(giveaway.id ?? null)} className="min-w-0 flex-1 text-left"><strong className="block truncate">{giveaway.title}</strong><small>{giveaway.status} · select to view entries</small></button><span className="flex shrink-0 gap-1">{!locked && <Button type="button" variant="ghost" size="icon" className="icon-action" onClick={() => startEdit(giveaway)} aria-label={`Edit ${giveaway.title}`} title="Edit"><Pencil /></Button>}{locked && <span className="inline-flex items-center px-2 text-xs font-bold text-muted-foreground" title="Editing is disabled after winners are selected"><LockKeyhole className="mr-1 size-3.5" /> Locked</span>}<Button type="button" variant="ghost" size="icon" className="icon-action icon-action-danger" onClick={() => void remove(giveaway.id ?? "")} aria-label={`Delete ${giveaway.title}`} title="Delete giveaway"><Trash2 /></Button></span></div>;
               })}
             </div>
           </section>

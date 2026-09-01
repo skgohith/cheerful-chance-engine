@@ -120,12 +120,27 @@ export async function adminSaveGiveaway(client: CloudClient, userId: string, dat
   title: string;
   description: string;
   imageUrl?: string | undefined;
+  instagramUrl?: string | undefined;
+  telegramUrl?: string | undefined;
+  youtubeUrl?: string | undefined;
+  facebookUrl?: string | undefined;
   startDate: string;
   endDate: string;
   winnerLimit: number;
 }) {
   await assertAdmin(client, userId);
-  const values = { title: data.title, description: data.description, image_url: data.imageUrl || null, start_date: data.startDate, end_date: data.endDate, winner_limit: data.winnerLimit };
+  const values = {
+    title: data.title,
+    description: data.description,
+    image_url: data.imageUrl || null,
+    instagram_url: data.instagramUrl || null,
+    telegram_url: data.telegramUrl || null,
+    youtube_url: data.youtubeUrl || null,
+    facebook_url: data.facebookUrl || null,
+    start_date: data.startDate,
+    end_date: data.endDate,
+    winner_limit: data.winnerLimit,
+  };
   if (data.id) {
     const { data: existing, error: readError } = await client.from("giveaways").select("status").eq("id", data.id).single();
     if (readError) throw new Error("Giveaway not found");
@@ -141,11 +156,8 @@ export async function adminSaveGiveaway(client: CloudClient, userId: string, dat
 
 export async function adminDeleteGiveaway(client: CloudClient, userId: string, giveawayId: string) {
   await assertAdmin(client, userId);
-  const { data: existing, error: readError } = await client.from("giveaways").select("status").eq("id", giveawayId).single();
-  if (readError) throw new Error("Giveaway not found");
-  if (existing.status === "completed" || existing.status === "data_cleared") throw new Error("Completed giveaways are locked");
-  const { error } = await client.from("giveaways").delete().eq("id", giveawayId);
-  if (error) throw new Error("Unable to delete giveaway");
+  const { data, error } = await client.rpc("delete_giveaway_preserve_winners", { p_giveaway_id: giveawayId });
+  if (error || !data) throw new Error(error?.message?.includes("not found") ? "Giveaway not found" : "Unable to delete giveaway");
   return { ok: true };
 }
 
