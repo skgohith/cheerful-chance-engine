@@ -1,0 +1,3 @@
+- [ ] Add admin-managed social links to giveaways and display them on public giveaway pages
+- [ ] Allow safe deletion of non-completed old giveaways from the admin studio
+- [ ] Regenerate database types and verify the app
