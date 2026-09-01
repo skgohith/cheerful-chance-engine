@@ -13,8 +13,9 @@ bun run dev
 
 ## Vercel deployment
 
-The production build is configured for Vercel. Add these environment variables
-to the Vercel project for every environment you deploy:
+The repository includes a Vercel configuration that installs the locked Bun
+dependencies and runs the production build. In Vercel, add these environment
+variables to **Development**, **Preview**, and **Production** as needed:
 
 ```text
 VITE_SUPABASE_URL
@@ -24,12 +25,19 @@ SUPABASE_PUBLISHABLE_KEY
 ```
 
 Use the same backend URL and publishable key configured for this project's
-Lovable Cloud backend. Do not add service-role keys to browser or Vercel
-environment variables unless a future server-only feature explicitly requires
-one.
+Lovable Cloud backend. The `VITE_*` pair is used by the browser; the
+`SUPABASE_*` pair is used by server functions, so configure both pairs with
+the same values. Do not add service-role keys to browser or Vercel environment
+variables unless a future server-only feature explicitly requires one.
 
 Vercel settings:
 
-- **Install command:** `bun install`
+- **Framework preset:** Vite (or leave it as automatically detected)
+- **Install command:** detected from `vercel.json` as `bun install --frozen-lockfile`
 - **Build command:** `bun run build`
 - **Output:** detected automatically by Nitro's Vercel preset
+
+After saving environment variables, create a new deployment so the server
+functions receive the updated values. If a deployment reports a missing
+environment variable, check that it was added to the environment selected for
+that deployment rather than only to another Vercel environment.
