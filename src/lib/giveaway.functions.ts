@@ -53,6 +53,15 @@ export const adminListParticipants = createServerFn({ method: "GET" }).middlewar
   return load(context.supabase, context.userId, data.giveawayId);
 });
 
+export const adminUpdateParticipantInstagramLink = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator((input) => z.object({
+  participantId: z.string().uuid(),
+  giveawayId: z.string().uuid(),
+  instagramLink: z.string().trim().url().max(300),
+}).parse(input)).handler(async ({ data, context }) => {
+  const { adminUpdateParticipantInstagramLink: update } = await import("./giveaway.server");
+  return update(context.supabase, context.userId, data);
+});
+
 export const adminListWinners = createServerFn({ method: "GET" }).middleware([requireSupabaseAuth]).inputValidator((input) => z.object({ giveawayId: z.string().uuid() }).parse(input)).handler(async ({ data, context }) => {
   const { adminListWinners: load } = await import("./giveaway.server");
   return load(context.supabase, context.userId, data.giveawayId);
